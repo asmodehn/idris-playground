@@ -32,62 +32,71 @@
 ||| Kleene logic 
 ||| inspied from Bool.idr
 |||
-module Kleene
+module Fool
 
 import Prelude.Bool
 
-||| Or three values for Kleene logic
-data Kool = T | U | F
+%access public export
 
-||| Koolean OR only evaluates the second argument if the first is `False or Unknown`.
-or : Kool -> Lazy Kool -> Kool
-or T _  = T
-or _ y  = y
+%default total
 
-||| Koolean AND only evaluates the second argument if the first is `True`.
-and : Kool -> Lazy Kool -> Kool
-and T x  = x
-and x _ = x
+-- ||| Three values for Kleene logic as type
+-- ||| Also interpretable as a Fuzzy Boolean
+-- ||| Also intrepretable in the context of Map Theory
+-- data Fool = T True | U Undecided | F False
 
--- Koolean Operator Precedence
-infixl 4 &&, ||
+-- useful aliases for lazy people
+T : Bool
+T = True
 
-(||) : Kool -> Lazy Kool -> Kool
+F : Bool
+F = False
+
+||| Fuzzy Bool Representation
+Fool : Type
+Fool = Maybe Bool  -- Fuzzy Logic | Quantum Logic | Category Theory | Map Theory
+
+||| Kleene NOT
+||| Ref https://en.wikipedia.org/wiki/Three-valued_logic#Kleene_and_Priest_logics
+not : Fool -> Fool
+not Nothing = Nothing
+not (Just b) = (Just (not b))
+
+||| OR operator 
+or : Fool -> Fool -> Fool
+or (Just True)  _       = (Just True)
+or (Just False) b       = b
+or Nothing (Just True) = (Just True)
+or Nothing _            = Nothing
+
+||| AND operator
+and : Fool -> Fool -> Fool
+and (Just False) _       = (Just False)
+and (Just True) b        = b
+and Nothing (Just False) = (Just False)
+and Nothing _            = Nothing
+
+-- Foolean Operator Precedence
+infixl 4 &&, ||, ~=>
+
+(||) : Fool -> Fool -> Fool
 (||) = or
 
-(&&) : Kool -> Lazy Kool -> Kool
+(&&) : Fool -> Fool -> Fool
 (&&) = and
 
 
+||| Implication
+imp : Fool -> Fool -> Fool
+imp x y = (not x) || y
+
+(~=>) : Fool -> Fool -> Fool
+(~=>) = imp
 
 
 
-
-
-||| Kleene NOT
-not : Kool -> Kool
-not T = F
-not U = U
-not F = T
-
--- ||| Implication
--- imp : Kool -> Lazy Kool -> Kool
--- imp = not x || y
-
-
-
-
-
-||| The underlying implementation of the if ... then ... else ... syntax
-||| @ b the condition on the if
-||| @ t the value if b is true
-||| @ e the falue if b is false
-ifThenElse : (b : Kool) -> (t : Lazy a) -> (e : Lazy a) -> a
-ifThenElse T  t e = t
-ifThenElse _  t e = e
-
-
--- tests
+-- TODO : proof
+-- TODO : runnable tests (we can test all values !
 
 
 
