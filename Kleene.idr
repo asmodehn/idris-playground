@@ -129,6 +129,7 @@ truth_vector op = [op F, op U, op T]
 
 -- TODO : express this with Pair (ie product) ?
 
+-- TODO : doctest
 ||| For simple representation of dual operators
 truth_table : (dop: Fool -> Fool -> Fool) -> Vect 3 Fools 
 truth_table dop = [ truth_vector (dop F), truth_vector (dop U), truth_vector (dop T)]
