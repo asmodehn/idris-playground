@@ -1,0 +1,25 @@
+nat : type.
+z : nat.
+s : nat -> nat.
+
+even   : nat -> type.
+even-z : even z.
+even-s : even N -> even (s (s N)).
+
+plus : nat -> nat -> nat -> type.
+plus/z : plus z N N.
+plus/s : plus N M P -> plus (s N) M (s P).
+
+%% declare totality assertion
+%mode plus +N1 +N2 -N3
+%worlds () (plus _ _ _)
+
+%% check totality assertion
+%total N1 (plus N1 _ _)
+
+sum-evens : even N1 -> even N2 -> plus N1 N2 N3 -> even N3 -> type.
+%mode sum-evens +D1 +D2 +Dplus -D3.
+%worlds () (sum-evens _ _ _ _).
+
+%%plus-commutative : 
+%%commutative/z: commutative z
