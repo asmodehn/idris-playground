@@ -1,3 +1,8 @@
+import Data.Vect
+import Data.Fin
+
+-- %default total  -- WHY NOT ?
+
 -- Possible types
 data Ty = TyInt | TyBool | TyFun Ty Ty
 
@@ -7,8 +12,6 @@ interpTy TyInt       = Integer
 interpTy TyBool      = Bool
 interpTy (TyFun A T) = interpTy A -> interpTy T
 
-import Data.Vect
-import Data.Fin
 
 using (G:Vect n Ty)  -- the context
   data Expr : Vect n Ty -> Ty -> Type   -- local vars Type -> Expr Type
@@ -26,4 +29,36 @@ using (G:Vect n Ty)  -- the context
     Op  : (interpTy a -> interpTy b -> interpTy c) -> Expr G a -> Expr G b -> Expr G c
     If  : Expr G TyBool -> Lazy (Expr G a) -> Lazy (Expr G a) -> Expr G a
  
+  data Env : Vect n Ty -> Type where
+    Nil  : Env Nil
+    (::) : interpTy a -> Env G -> Env (a :: G)
+
+  lookup : HasType i G t -> Env G -> interpTy t
+  lookup Stop    (x :: xs) = x
+  lookup (Pop k) (x :: xs) = lookup k xs
+
+
+  interp : Env G -> Expr G t -> interpTy t
+  interp env (Var i)     = lookup i env
+  interp env (Val x)     = x
+  interp env (Lam sc)    = \x => interp (x :: env) sc
+  interp env (App f s)   = interp env f (interp env s)
+  interp env (Op op x y) = op (interp env x) (interp env y)
+  interp env (If x t e)  = if interp env x then interp env t
+                           else interp env e
+
+  add : Expr G (TyFun TyInt (TyFun TyInt TyInt))
+  add = Lam (Lam (Op (+) (Var Stop) (Var (Pop Stop))))
+
+  fact : Expr G (TyFun TyInt TyInt)
+  fact = Lam (If (Op (==) (Var Stop) (Val 0))
+                 (Val 1)
+                 (Op (*) (App fact (Op (-) (Var Stop) (Val 1)))
+                         (Var Stop)))
+
+partial
+main : IO ()
+main = do putStr "Enter a number: "
+          x <- getLine
+          printLn (interp [] fact (cast x))
 
