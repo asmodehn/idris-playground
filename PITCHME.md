@@ -47,8 +47,36 @@ Arithmetics
 ===========
 
 - Completeness/Incompleteness Theorems : We should be aware of results in arithemtics that are relevant for computer science.
-- Our Semantics and Representation will likely be isomorphic to some arithemtic, and we need to investigate the properties of such an arithmetic.
+- Our Semantics and Representation will likely be isomorphic to some arithmetic, and we need to investigate the properties of such an arithmetic.
 
+---
+
+Logic
+=====
+
+- Derives from arithmetic
+- Is a way to express statements about the world, combine, and qualify them (true, false, provable, etc.)
+- It is the "glue" tying us with our perception of the real world.
+
+---
+
+Type Theory
+===========
+
+- Links with logic
+- Provides a way to infer statements and represent our reasoning in that underlying logic
+
+
+---
+
+Category Theory
+===============
+
+- Links with Type Theory
+- Is a formal way to represent and reason with mathematical objects
+
+
+---
 
 
 
